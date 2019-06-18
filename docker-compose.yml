@@ -1,0 +1,38 @@
+version: '3.7'
+services:
+  nginx:
+    image: nginx:stable
+    deploy:
+      replicas: 1
+    ports:
+      - "80:80"
+    networks:
+      - nginx_net
+    volumes:
+      - type: bind
+        source: $HOME/git/nginx/html
+        target: /usr/share/nginx/html
+        read_only: true
+      - type: bind
+        source: $HOME/git/nginx/nginx.conf
+        target: /etc/nginx/nginx.conf
+        read_only: true
+      - type: bind
+        source: $HOME/git/nginx/conf.d
+        target: /etc/nginx/conf.d
+        read_only: true
+  jenkins:
+    image: jonnyirwin/jenkins:latest
+    deploy:
+      replicas: 1
+    volumes:
+      - 'jenkins_home:/var/jenkins_home'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    networks:
+      - nginx_net
+
+networks:
+  nginx_net:
+
+volumes:
+  jenkins_home:
